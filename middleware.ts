@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
@@ -37,16 +37,14 @@ export async function middleware(request: NextRequest) {
     const isAdmin = profile?.role === 'admin'
     const path = request.nextUrl.pathname
 
-    if (!isAdmin && path.startsWith('/admin')) {
-      return NextResponse.redirect(new URL('/candidat/formations', request.url))
-    }
-    if (isAdmin && path.startsWith('/candidat')) {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url))
-    }
     if (path === '/login') {
       return NextResponse.redirect(
         new URL(isAdmin ? '/admin/dashboard' : '/candidat/formations', request.url)
       )
+    }
+
+    if (!isAdmin && path.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/candidat/formations', request.url))
     }
   }
 
