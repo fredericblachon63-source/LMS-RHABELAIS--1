@@ -71,7 +71,7 @@ if (viewingPdf) {
         </div>
         <div className="flex-1 relative">
           <iframe
-            src={viewingPdf + '#toolbar=0&navpanes=0&scrollbar=1&view=FitH'}
+            src={`https://docs.google.com/viewer?url=${encodeURIComponent(viewingPdf)}&embedded=true`}
             className="w-full h-full"
             style={{ height: 'calc(100vh - 56px)' }}
             title="Formation"
