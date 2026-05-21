@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function AdminDashboard() {
@@ -15,6 +16,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       const supabase = createClient()
+const router = useRouter()
+
+const handleLogout = async () => {
+  await supabase.auth.signOut()
+  router.push('/login')
+}
       const [f, e, q, r] = await Promise.all([
         supabase.from('formations').select('id', { count: 'exact', head: true }),
         supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'candidate'),
@@ -50,6 +57,7 @@ export default function AdminDashboard() {
             <Link href="/admin/formations" className="text-gray-600 hover:text-blue-600 font-medium">Formations</Link>
             <Link href="/admin/quiz" className="text-gray-600 hover:text-blue-600 font-medium">Quiz</Link>
             <Link href="/admin/eleves" className="text-gray-600 hover:text-blue-600 font-medium">Élèves</Link>
+<button onClick={handleLogout} className="text-red-500 hover:text-red-700 font-medium">Déconnexion</button>
           </div>
         </div>
       </nav>

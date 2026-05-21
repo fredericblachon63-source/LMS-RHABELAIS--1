@@ -58,7 +58,10 @@ export default function CandidatFormations() {
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-gray-900">LMS Rabelais</h1>
-          <span className="text-gray-500 text-sm">Mes formations</span>
+         <div className="flex items-center gap-4">
+  <span className="text-gray-500 text-sm">Mes formations</span>
+  <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/login' }} className="text-red-500 hover:text-red-700 text-sm font-medium">Déconnexion</button>
+</div>
         </div>
       </nav>
       <div className="max-w-5xl mx-auto px-4 py-8">
