@@ -6,34 +6,24 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    formations: 0,
-    eleves: 0,
-    quiz: 0,
-    resultats: 0
-  })
+  const [stats, setStats] = useState({ formations: 0, eleves: 0, quiz: 0, resultats: 0 })
+  const router = useRouter()
+  const supabase = createClient()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
 
   useEffect(() => {
     const fetchStats = async () => {
-      const supabase = createClient()
-const router = useRouter()
-
-const handleLogout = async () => {
-  await supabase.auth.signOut()
-  router.push('/login')
-}
       const [f, e, q, r] = await Promise.all([
         supabase.from('formations').select('id', { count: 'exact', head: true }),
         supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'candidate'),
         supabase.from('quizzes').select('id', { count: 'exact', head: true }),
         supabase.from('quiz_results').select('id', { count: 'exact', head: true })
       ])
-      setStats({
-        formations: f.count || 0,
-        eleves: e.count || 0,
-        quiz: q.count || 0,
-        resultats: r.count || 0
-      })
+      setStats({ formations: f.count || 0, eleves: e.count || 0, quiz: q.count || 0, resultats: r.count || 0 })
     }
     fetchStats()
   }, [])
@@ -49,31 +39,28 @@ const handleLogout = async () => {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-         <div className="flex items-center gap-3">
-  <img src="https://qlqdgmobitiwshlowumt.supabase.co/storage/v1/object/public/formations%20lms/logo.png" alt="logo" className="h-10" />
-  <h1 className="text-xl font-bold text-gray-900">LMS RHabelais — Admin</h1>
-</div>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-3">
+            <img src="https://qlqdgmobitiwshlowumt.supabase.co/storage/v1/object/public/formations%20lms/logo.png" alt="logo" className="h-10" />
+            <h1 className="text-xl font-bold text-gray-900">LMS RHabelais — Admin</h1>
+          </div>
+          <div className="flex gap-4 items-center">
             <Link href="/admin/formations" className="text-gray-600 hover:text-blue-600 font-medium">Formations</Link>
             <Link href="/admin/quiz" className="text-gray-600 hover:text-blue-600 font-medium">Quiz</Link>
             <Link href="/admin/eleves" className="text-gray-600 hover:text-blue-600 font-medium">Élèves</Link>
-<button onClick={handleLogout} className="text-red-500 hover:text-red-700 font-medium">Déconnexion</button>
+            <Link href="/admin/resultats" className="text-gray-600 hover:text-blue-600 font-medium">Résultats</Link>
+            <button onClick={handleLogout} className="bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1 rounded-lg font-medium text-sm">Déconnexion</button>
           </div>
         </div>
       </nav>
-
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Tableau de bord</h2>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {cards.map((card) => (
             <Link key={card.label} href={card.href}>
               <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer border border-gray-100">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-3xl">{card.icon}</span>
-                  <span className={`${card.color} text-white text-xs font-medium px-2 py-1 rounded-full`}>
-                    {card.label}
-                  </span>
+                  <span className={`${card.color} text-white text-xs font-medium px-2 py-1 rounded-full`}>{card.label}</span>
                 </div>
                 <p className="text-3xl font-bold text-gray-900">{card.value}</p>
                 <p className="text-gray-500 text-sm mt-1">{card.label} au total</p>
@@ -81,7 +68,6 @@ const handleLogout = async () => {
             </Link>
           ))}
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link href="/admin/formations">
             <div className="bg-blue-600 text-white rounded-xl p-6 hover:bg-blue-700 transition-colors cursor-pointer">
