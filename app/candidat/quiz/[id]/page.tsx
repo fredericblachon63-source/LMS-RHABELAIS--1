@@ -47,7 +47,7 @@ export default function CandidatQuiz() {
     fetchQuiz()
   }, [quizId])
 
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
     setSubmitting(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || !quiz) return
@@ -115,33 +115,16 @@ const handleSubmit = async () => {
     setResult({ score: pourcentage, total, reussi })
     setSubmitting(false)
   }
-    })
-
-    const pourcentage = total > 0 ? Math.round((score / total) * 100) : 0
-    const reussi = pourcentage >= quiz.seuil_reussite
-
-    await supabase.from('quiz_results').upsert({
-      user_id: user.id,
-      quiz_id: quizId,
-      score: pourcentage,
-      reponses,
-      reussi
-    })
-
-    setResult({ score: pourcentage, total, reussi })
-    setSubmitting(false)
-  }
 if (loading) return <div className="min-h-screen flex items-center justify-center"><p>Chargement...</p></div>
 
   if (result) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
-        <div className="text-6xl mb-4">{result.reussi ? '' : ''}</div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           {result.reussi ? 'Felicitations !' : 'Dommage...'}
         </h2>
         <p className="text-gray-500 mb-4">
-          {result.reussi ? 'Vous avez reussi ce quiz !' : 'Vous n\'avez pas atteint le seuil de reussite.'}
+          {result.reussi ? 'Vous avez reussi ce quiz !' : 'Vous n avez pas atteint le seuil de reussite.'}
         </p>
         <div className={`text-5xl font-bold mb-2 ${result.reussi ? 'text-green-600' : 'text-red-500'}`}>
           {result.score}%
@@ -149,7 +132,7 @@ if (loading) return <div className="min-h-screen flex items-center justify-cente
         <p className="text-gray-400 text-sm mb-6">Seuil requis : {quiz?.seuil_reussite}%</p>
         {result.reussi && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-            <p className="text-green-700 text-sm font-medium">Une attestation de reussite vous sera envoyee par email.</p>
+            <p className="text-green-700 text-sm font-medium">Une attestation de reussite vous a ete envoyee par email.</p>
           </div>
         )}
         <Link href="/candidat/formations" className="block w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-medium">
@@ -174,7 +157,7 @@ if (loading) return <div className="min-h-screen flex items-center justify-cente
             <div key={q.id} className="bg-white rounded-xl shadow-sm border p-6">
               <div className="flex items-center gap-2 mb-3">
                 <span className="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded">Q{i + 1}</span>
-                <span className="text-xs text-gray-400">{q.type === 'qcm' ? 'Choix multiple' : 'Reponse libre'} • {q.points} pt</span>
+                <span className="text-xs text-gray-400">{q.type === 'qcm' ? 'Choix multiple' : 'Reponse libre'} - {q.points} pt</span>
               </div>
               <p className="font-medium text-gray-900 mb-4">{q.texte}</p>
               {q.type === 'qcm' && q.options ? (
@@ -204,7 +187,7 @@ if (loading) return <div className="min-h-screen flex items-center justify-cente
         <button
           onClick={handleSubmit}
           disabled={submitting || Object.keys(reponses).length === 0}
-          className="w-full mt-8 bg-purple-600 text-white py-4 rounded-xl hover:bg-purple-700 disabled:opacity-50 font-semibold text-lg transition-colors"
+          className="w-full mt-8 bg-purple-600 text-white py-4 rounded-xl hover:bg-purple-700 disabled:opacity-50 font-semibold text-lg"
         >
           {submitting ? 'Correction en cours...' : 'Soumettre mes reponses'}
         </button>
