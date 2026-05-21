@@ -42,7 +42,10 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-gray-900">🎓 LMS Rabelais — Admin</h1>
+         <div className="flex items-center gap-3">
+  <img src="https://qlqdgmobitiwshlowumt.supabase.co/storage/v1/object/public/formations%20lms/logo.png" alt="logo" className="h-10" />
+  <h1 className="text-xl font-bold text-gray-900">LMS RHabelais — Admin</h1>
+</div>
           <div className="flex gap-4">
             <Link href="/admin/formations" className="text-gray-600 hover:text-blue-600 font-medium">Formations</Link>
             <Link href="/admin/quiz" className="text-gray-600 hover:text-blue-600 font-medium">Quiz</Link>

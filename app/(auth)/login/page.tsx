@@ -42,8 +42,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">LMS Rabelais</h1>
-          <p className="text-gray-500 mt-2">Connectez-vous à votre espace</p>
+         <img src="https://qlqdgmobitiwshlowumt.supabase.co/storage/v1/object/public/formations%20lms/logo.png" alt="LMS RHabelais" className="h-20 mx-auto mb-4" />
+<p className="text-gray-500 mt-2">Connectez-vous a votre espace</p>
         </div>
 
         {error && (
