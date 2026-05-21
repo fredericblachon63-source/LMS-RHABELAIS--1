@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   try {
     if (type === 'attestation') {
       await resend.emails.send({
-        from: 'LMS Rabelais <onboarding@resend.dev>',
+        from: 'LMS Rabelais <noreply@rhabelais.fr>',
         to: candidatEmail,
         subject: `Attestation de reussite - ${formationTitre}`,
         html: `
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     if (type === 'recap_admin') {
       await resend.emails.send({
-        from: 'LMS Rabelais <onboarding@resend.dev>',
+        from: 'LMS Rabelais <noreply@rhabelais.fr>',
         to: adminEmail,
         subject: `Nouveau resultat quiz - ${candidatNom} - ${formationTitre}`,
         html: `
