@@ -47,7 +47,7 @@ export default function CandidatQuiz() {
     fetchQuiz()
   }, [quizId])
 
-  const handleSubmit = async () => {
+const handleSubmit = async () => {
     setSubmitting(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || !quiz) return
@@ -60,6 +60,61 @@ export default function CandidatQuiz() {
       if (q.bonne_reponse && rep.toLowerCase().trim() === q.bonne_reponse.toLowerCase().trim()) {
         score += q.points
       }
+    })
+
+    const pourcentage = total > 0 ? Math.round((score / total) * 100) : 0
+    const reussi = pourcentage >= quiz.seuil_reussite
+
+    await supabase.from('quiz_results').upsert({
+      user_id: user.id,
+      quiz_id: quizId,
+      score: pourcentage,
+      reponses,
+      reussi
+    })
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, email')
+      .eq('id', user.id)
+      .single()
+
+    const { data: formation } = await supabase
+      .from('formations')
+      .select('titre')
+      .eq('id', quiz.formation_id)
+      .single()
+
+    await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'recap_admin',
+        candidatEmail: profile?.email || user.email,
+        candidatNom: profile?.full_name || 'Candidat',
+        formationTitre: formation?.titre || 'Formation',
+        score: pourcentage,
+        adminEmail: 'contact@rhabelais.fr'
+      })
+    })
+
+    if (reussi) {
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'attestation',
+          candidatEmail: profile?.email || user.email,
+          candidatNom: profile?.full_name || 'Candidat',
+          formationTitre: formation?.titre || 'Formation',
+          score: pourcentage
+        })
+      })
+    }
+
+    setResult({ score: pourcentage, total, reussi })
+    setSubmitting(false)
+  }
     })
 
     const pourcentage = total > 0 ? Math.round((score / total) * 100) : 0
