@@ -21,31 +21,34 @@ export async function middleware(request: NextRequest) {
     }
   )
 
+  const path = request.nextUrl.pathname
+
+  // Pages publiques — jamais bloquées
+  const publicPaths = ['/login', '/forgot-password', '/reset-password']
+  if (publicPaths.some(p => path.startsWith(p))) {
+    return supabaseResponse
+  }
+
   const { data: { user } } = await supabase.auth.getUser()
 
-if (!user && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/forgot-password') && !request.nextUrl.pathname.startsWith('/reset-password')) {
+  if (!user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (user) {
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
 
-    const isAdmin = profile?.role === 'admin'
-    const path = request.nextUrl.pathname
+  const isAdmin = profile?.role === 'admin'
 
-    if (path === '/login') {
-      return NextResponse.redirect(
-        new URL(isAdmin ? '/admin/dashboard' : '/candidat/formations', request.url)
-      )
-    }
+  if (!isAdmin && path.startsWith('/admin')) {
+    return NextResponse.redirect(new URL('/candidat/formations', request.url))
+  }
 
-    if (!isAdmin && path.startsWith('/admin')) {
-      return NextResponse.redirect(new URL('/candidat/formations', request.url))
-    }
+  if (isAdmin && path.startsWith('/candidat')) {
+    return NextResponse.redirect(new URL('/admin/dashboard', request.url))
   }
 
   return supabaseResponse
